@@ -1,0 +1,762 @@
+[34m 12[39m: [33mclass [39mStr
+[34m 13[39m: [33m{[39m
+[34m 14[39m: [33m    use [39mMacroable[33m;[39m
+[34m 15[39m: 
+[34m 16[39m: [33m    [39m[34m/**[39m
+[34m 17[39m: [34m     * The cache of snake-cased words.[39m
+[34m 18[39m: [34m     *[39m
+[34m 19[39m: [34m     * @var array[39m
+[34m 20[39m: [34m     */[39m
+[34m 21[39m: [34m    [39m[33mprotected [39m[33mstatic [39m$snakeCache [33m= [];[39m
+[34m 22[39m: 
+[34m 23[39m: [33m    [39m[34m/**[39m
+[34m 24[39m: [34m     * The cache of camel-cased words.[39m
+[34m 25[39m: [34m     *[39m
+[34m 26[39m: [34m     * @var array[39m
+[34m 27[39m: [34m     */[39m
+[34m 28[39m: [34m    [39m[33mprotected [39m[33mstatic [39m$camelCache [33m= [];[39m
+[34m 29[39m: 
+[34m 30[39m: [33m    [39m[34m/**[39m
+[34m 31[39m: [34m     * The cache of studly-cased words.[39m
+[34m 32[39m: [34m     *[39m
+[34m 33[39m: [34m     * @var array[39m
+[34m 34[39m: [34m     */[39m
+[34m 35[39m: [34m    [39m[33mprotected [39m[33mstatic [39m$studlyCache [33m= [];[39m
+[34m 36[39m: 
+[34m 37[39m: [33m    [39m[34m/**[39m
+[34m 38[39m: [34m     * The callback that should be used to generate UUIDs.[39m
+[34m 39[39m: [34m     *[39m
+[34m 40[39m: [34m     * @var callable[39m
+[34m 41[39m: [34m     */[39m
+[34m 42[39m: [34m    [39m[33mprotected [39m[33mstatic [39m$uuidFactory[33m;[39m
+[34m 43[39m: 
+[34m 44[39m: [33m    [39m[34m/**[39m
+[34m 45[39m: [34m     * Get a new stringable object from the given string.[39m
+[34m 46[39m: [34m     *[39m
+[34m 47[39m: [34m     * @param  string  $string[39m
+[34m 48[39m: [34m     * @return \Illuminate\Support\Stringable[39m
+[34m 49[39m: [34m     */[39m
+[34m 50[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mof[33m([39m$string[33m)[39m
+[34m 51[39m: [33m    {[39m
+[34m 52[39m: [33m        return new [39mStringable[33m([39m$string[33m);[39m
+[34m 53[39m: [33m    }[39m
+[34m 54[39m: 
+[34m 55[39m: [33m    [39m[34m/**[39m
+[34m 56[39m: [34m     * Return the remainder of a string after the first occurrence of a given value.[39m
+[34m 57[39m: [34m     *[39m
+[34m 58[39m: [34m     * @param  string  $subject[39m
+[34m 59[39m: [34m     * @param  string  $search[39m
+[34m 60[39m: [34m     * @return string[39m
+[34m 61[39m: [34m     */[39m
+[34m 62[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mafter[33m([39m$subject[33m, [39m$search[33m)[39m
+[34m 63[39m: [33m    {[39m
+[34m 64[39m: [33m        return [39m$search [33m=== [39m[32m'' [39m[33m? [39m$subject [33m: [39marray_reverse[33m([39mexplode[33m([39m$search[33m, [39m$subject[33m, [39m[35m2[39m[33m))[[39m[35m0[39m[33m];[39m
+[34m 65[39m: [33m    }[39m
+[34m 66[39m: 
+[34m 67[39m: [33m    [39m[34m/**[39m
+[34m 68[39m: [34m     * Return the remainder of a string after the last occurrence of a given value.[39m
+[34m 69[39m: [34m     *[39m
+[34m 70[39m: [34m     * @param  string  $subject[39m
+[34m 71[39m: [34m     * @param  string  $search[39m
+[34m 72[39m: [34m     * @return string[39m
+[34m 73[39m: [34m     */[39m
+[34m 74[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mafterLast[33m([39m$subject[33m, [39m$search[33m)[39m
+[34m 75[39m: [33m    {[39m
+[34m 76[39m: [33m        if ([39m$search [33m=== [39m[32m''[39m[33m) {[39m
+[34m 77[39m: [33m            return [39m$subject[33m;[39m
+[34m 78[39m: [33m        }[39m
+[34m 79[39m: 
+[34m 80[39m: [33m        [39m$position [33m= [39mstrrpos[33m([39m$subject[33m, (string) [39m$search[33m);[39m
+[34m 81[39m: 
+[34m 82[39m: [33m        if ([39m$position [33m=== [39mfalse[33m) {[39m
+[34m 83[39m: [33m            return [39m$subject[33m;[39m
+[34m 84[39m: [33m        }[39m
+[34m 85[39m: 
+[34m 86[39m: [33m        return [39msubstr[33m([39m$subject[33m, [39m$position [33m+ [39mstrlen[33m([39m$search[33m));[39m
+[34m 87[39m: [33m    }[39m
+[34m 88[39m: 
+[34m 89[39m: [33m    [39m[34m/**[39m
+[34m 90[39m: [34m     * Transliterate a UTF-8 value to ASCII.[39m
+[34m 91[39m: [34m     *[39m
+[34m 92[39m: [34m     * @param  string  $value[39m
+[34m 93[39m: [34m     * @param  string  $language[39m
+[34m 94[39m: [34m     * @return string[39m
+[34m 95[39m: [34m     */[39m
+[34m 96[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mascii[33m([39m$value[33m, [39m$language [33m= [39m[32m'en'[39m[33m)[39m
+[34m 97[39m: [33m    {[39m
+[34m 98[39m: [33m        return [39mASCII[33m::[39mto_ascii[33m((string) [39m$value[33m, [39m$language[33m);[39m
+[34m 99[39m: [33m    }[39m
+[34m100[39m: 
+[34m101[39m: [33m    [39m[34m/**[39m
+[34m102[39m: [34m     * Get the portion of a string before the first occurrence of a given value.[39m
+[34m103[39m: [34m     *[39m
+[34m104[39m: [34m     * @param  string  $subject[39m
+[34m105[39m: [34m     * @param  string  $search[39m
+[34m106[39m: [34m     * @return string[39m
+[34m107[39m: [34m     */[39m
+[34m108[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mbefore[33m([39m$subject[33m, [39m$search[33m)[39m
+[34m109[39m: [33m    {[39m
+[34m110[39m: [33m        return [39m$search [33m=== [39m[32m'' [39m[33m? [39m$subject [33m: [39mexplode[33m([39m$search[33m, [39m$subject[33m)[[39m[35m0[39m[33m];[39m
+[34m111[39m: [33m    }[39m
+[34m112[39m: 
+[34m113[39m: [33m    [39m[34m/**[39m
+[34m114[39m: [34m     * Get the portion of a string before the last occurrence of a given value.[39m
+[34m115[39m: [34m     *[39m
+[34m116[39m: [34m     * @param  string  $subject[39m
+[34m117[39m: [34m     * @param  string  $search[39m
+[34m118[39m: [34m     * @return string[39m
+[34m119[39m: [34m     */[39m
+[34m120[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mbeforeLast[33m([39m$subject[33m, [39m$search[33m)[39m
+[34m121[39m: [33m    {[39m
+[34m122[39m: [33m        if ([39m$search [33m=== [39m[32m''[39m[33m) {[39m
+[34m123[39m: [33m            return [39m$subject[33m;[39m
+[34m124[39m: [33m        }[39m
+[34m125[39m: 
+[34m126[39m: [33m        [39m$pos [33m= [39mmb_strrpos[33m([39m$subject[33m, [39m$search[33m);[39m
+[34m127[39m: 
+[34m128[39m: [33m        if ([39m$pos [33m=== [39mfalse[33m) {[39m
+[34m129[39m: [33m            return [39m$subject[33m;[39m
+[34m130[39m: [33m        }[39m
+[34m131[39m: 
+[34m132[39m: [33m        return static::[39msubstr[33m([39m$subject[33m, [39m[35m0[39m[33m, [39m$pos[33m);[39m
+[34m133[39m: [33m    }[39m
+[34m134[39m: 
+[34m135[39m: [33m    [39m[34m/**[39m
+[34m136[39m: [34m     * Get the portion of a string between two given values.[39m
+[34m137[39m: [34m     *[39m
+[34m138[39m: [34m     * @param  string  $subject[39m
+[34m139[39m: [34m     * @param  string  $from[39m
+[34m140[39m: [34m     * @param  string  $to[39m
+[34m141[39m: [34m     * @return string[39m
+[34m142[39m: [34m     */[39m
+[34m143[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mbetween[33m([39m$subject[33m, [39m$from[33m, [39m$to[33m)[39m
+[34m144[39m: [33m    {[39m
+[34m145[39m: [33m        if ([39m$from [33m=== [39m[32m'' [39m[33m|| [39m$to [33m=== [39m[32m''[39m[33m) {[39m
+[34m146[39m: [33m            return [39m$subject[33m;[39m
+[34m147[39m: [33m        }[39m
+[34m148[39m: 
+[34m149[39m: [33m        return static::[39mbeforeLast[33m(static::[39mafter[33m([39m$subject[33m, [39m$from[33m), [39m$to[33m);[39m
+[34m150[39m: [33m    }[39m
+[34m151[39m: 
+[34m152[39m: [33m    [39m[34m/**[39m
+[34m153[39m: [34m     * Convert a value to camel case.[39m
+[34m154[39m: [34m     *[39m
+[34m155[39m: [34m     * @param  string  $value[39m
+[34m156[39m: [34m     * @return string[39m
+[34m157[39m: [34m     */[39m
+[34m158[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mcamel[33m([39m$value[33m)[39m
+[34m159[39m: [33m    {[39m
+[34m160[39m: [33m        if (isset(static::[39m$camelCache[33m[[39m$value[33m])) {[39m
+[34m161[39m: [33m            return static::[39m$camelCache[33m[[39m$value[33m];[39m
+[34m162[39m: [33m        }[39m
+[34m163[39m: 
+[34m164[39m: [33m        return static::[39m$camelCache[33m[[39m$value[33m] = [39mlcfirst[33m(static::[39mstudly[33m([39m$value[33m));[39m
+[34m165[39m: [33m    }[39m
+[34m166[39m: 
+[34m167[39m: [33m    [39m[34m/**[39m
+[34m168[39m: [34m     * Determine if a given string contains a given substring.[39m
+[34m169[39m: [34m     *[39m
+[34m170[39m: [34m     * @param  string  $haystack[39m
+[34m171[39m: [34m     * @param  string|string[]  $needles[39m
+[34m172[39m: [34m     * @return bool[39m
+[34m173[39m: [34m     */[39m
+[34m174[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mcontains[33m([39m$haystack[33m, [39m$needles[33m)[39m
+[34m175[39m: [33m    {[39m
+[34m176[39m: [33m        foreach ((array) [39m$needles [33mas [39m$needle[33m) {[39m
+[34m177[39m: [33m            if ([39m$needle [33m!== [39m[32m'' [39m[33m&& [39mmb_strpos[33m([39m$haystack[33m, [39m$needle[33m) !== [39mfalse[33m) {[39m
+[34m178[39m: [33m                return [39mtrue[33m;[39m
+[34m179[39m: [33m            }[39m
+[34m180[39m: [33m        }[39m
+[34m181[39m: 
+[34m182[39m: [33m        return [39mfalse[33m;[39m
+[34m183[39m: [33m    }[39m
+[34m184[39m: 
+[34m185[39m: [33m    [39m[34m/**[39m
+[34m186[39m: [34m     * Determine if a given string contains all array values.[39m
+[34m187[39m: [34m     *[39m
+[34m188[39m: [34m     * @param  string  $haystack[39m
+[34m189[39m: [34m     * @param  string[]  $needles[39m
+[34m190[39m: [34m     * @return bool[39m
+[34m191[39m: [34m     */[39m
+[34m192[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mcontainsAll[33m([39m$haystack[33m, array [39m$needles[33m)[39m
+[34m193[39m: [33m    {[39m
+[34m194[39m: [33m        foreach ([39m$needles [33mas [39m$needle[33m) {[39m
+[34m195[39m: [33m            if (! static::[39mcontains[33m([39m$haystack[33m, [39m$needle[33m)) {[39m
+[34m196[39m: [33m                return [39mfalse[33m;[39m
+[34m197[39m: [33m            }[39m
+[34m198[39m: [33m        }[39m
+[34m199[39m: 
+[34m200[39m: [33m        return [39mtrue[33m;[39m
+[34m201[39m: [33m    }[39m
+[34m202[39m: 
+[34m203[39m: [33m    [39m[34m/**[39m
+[34m204[39m: [34m     * Determine if a given string ends with a given substring.[39m
+[34m205[39m: [34m     *[39m
+[34m206[39m: [34m     * @param  string  $haystack[39m
+[34m207[39m: [34m     * @param  string|string[]  $needles[39m
+[34m208[39m: [34m     * @return bool[39m
+[34m209[39m: [34m     */[39m
+[34m210[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mendsWith[33m([39m$haystack[33m, [39m$needles[33m)[39m
+[34m211[39m: [33m    {[39m
+[34m212[39m: [33m        foreach ((array) [39m$needles [33mas [39m$needle[33m) {[39m
+[34m213[39m: [33m            if ([39m$needle [33m!== [39m[32m'' [39m[33m&& [39msubstr[33m([39m$haystack[33m, -[39mstrlen[33m([39m$needle[33m)) === (string) [39m$needle[33m) {[39m
+[34m214[39m: [33m                return [39mtrue[33m;[39m
+[34m215[39m: [33m            }[39m
+[34m216[39m: [33m        }[39m
+[34m217[39m: 
+[34m218[39m: [33m        return [39mfalse[33m;[39m
+[34m219[39m: [33m    }[39m
+[34m220[39m: 
+[34m221[39m: [33m    [39m[34m/**[39m
+[34m222[39m: [34m     * Cap a string with a single instance of a given value.[39m
+[34m223[39m: [34m     *[39m
+[34m224[39m: [34m     * @param  string  $value[39m
+[34m225[39m: [34m     * @param  string  $cap[39m
+[34m226[39m: [34m     * @return string[39m
+[34m227[39m: [34m     */[39m
+[34m228[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mfinish[33m([39m$value[33m, [39m$cap[33m)[39m
+[34m229[39m: [33m    {[39m
+[34m230[39m: [33m        [39m$quoted [33m= [39mpreg_quote[33m([39m$cap[33m, [39m[32m'/'[39m[33m);[39m
+[34m231[39m: 
+[34m232[39m: [33m        return [39mpreg_replace[33m([39m[32m'/(?:'[39m[33m.[39m$quoted[33m.[39m[32m')+$/u'[39m[33m, [39m[32m''[39m[33m, [39m$value[33m).[39m$cap[33m;[39m
+[34m233[39m: [33m    }[39m
+[34m234[39m: 
+[34m235[39m: [33m    [39m[34m/**[39m
+[34m236[39m: [34m     * Determine if a given string matches a given pattern.[39m
+[34m237[39m: [34m     *[39m
+[34m238[39m: [34m     * @param  string|array  $pattern[39m
+[34m239[39m: [34m     * @param  string  $value[39m
+[34m240[39m: [34m     * @return bool[39m
+[34m241[39m: [34m     */[39m
+[34m242[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mis[33m([39m$pattern[33m, [39m$value[33m)[39m
+[34m243[39m: [33m    {[39m
+[34m244[39m: [33m        [39m$patterns [33m= [39mArr[33m::[39mwrap[33m([39m$pattern[33m);[39m
+[34m245[39m: 
+[34m246[39m: [33m        if (empty([39m$patterns[33m)) {[39m
+[34m247[39m: [33m            return [39mfalse[33m;[39m
+[34m248[39m: [33m        }[39m
+[34m249[39m: 
+[34m250[39m: [33m        foreach ([39m$patterns [33mas [39m$pattern[33m) {[39m
+[34m251[39m: [33m            [39m[34m// If the given value is an exact match we can of course return true right[39m
+[34m252[39m: [34m            // from the beginning. Otherwise, we will translate asterisks and do an[39m
+[34m253[39m: [34m            // actual pattern match against the two strings to see if they match.[39m
+[34m254[39m: [34m            [39m[33mif ([39m$pattern [33m== [39m$value[33m) {[39m
+[34m255[39m: [33m                return [39mtrue[33m;[39m
+[34m256[39m: [33m            }[39m
+[34m257[39m: 
+[34m258[39m: [33m            [39m$pattern [33m= [39mpreg_quote[33m([39m$pattern[33m, [39m[32m'#'[39m[33m);[39m
+[34m259[39m: 
+[34m260[39m: [33m            [39m[34m// Asterisks are translated into zero-or-more regular expression wildcards[39m
+[34m261[39m: [34m            // to make it convenient to check if the strings starts with the given[39m
+[34m262[39m: [34m            // pattern such as "library/*", making any string check convenient.[39m
+[34m263[39m: [34m            [39m$pattern [33m= [39mstr_replace[33m([39m[32m'\*'[39m[33m, [39m[32m'.*'[39m[33m, [39m$pattern[33m);[39m
+[34m264[39m: 
+[34m265[39m: [33m            if ([39mpreg_match[33m([39m[32m'#^'[39m[33m.[39m$pattern[33m.[39m[32m'\z#u'[39m[33m, [39m$value[33m) === [39m[35m1[39m[33m) {[39m
+[34m266[39m: [33m                return [39mtrue[33m;[39m
+[34m267[39m: [33m            }[39m
+[34m268[39m: [33m        }[39m
+[34m269[39m: 
+[34m270[39m: [33m        return [39mfalse[33m;[39m
+[34m271[39m: [33m    }[39m
+[34m272[39m: 
+[34m273[39m: [33m    [39m[34m/**[39m
+[34m274[39m: [34m     * Determine if a given string is 7 bit ASCII.[39m
+[34m275[39m: [34m     *[39m
+[34m276[39m: [34m     * @param  string  $value[39m
+[34m277[39m: [34m     * @return bool[39m
+[34m278[39m: [34m     */[39m
+[34m279[39m: [34m    [39m[1mpublic [22m[33mstatic function [39misAscii[33m([39m$value[33m)[39m
+[34m280[39m: [33m    {[39m
+[34m281[39m: [33m        return [39mASCII[33m::[39mis_ascii[33m((string) [39m$value[33m);[39m
+[34m282[39m: [33m    }[39m
+[34m283[39m: 
+[34m284[39m: [33m    [39m[34m/**[39m
+[34m285[39m: [34m     * Determine if a given string is a valid UUID.[39m
+[34m286[39m: [34m     *[39m
+[34m287[39m: [34m     * @param  string  $value[39m
+[34m288[39m: [34m     * @return bool[39m
+[34m289[39m: [34m     */[39m
+[34m290[39m: [34m    [39m[1mpublic [22m[33mstatic function [39misUuid[33m([39m$value[33m)[39m
+[34m291[39m: [33m    {[39m
+[34m292[39m: [33m        if (! [39mis_string[33m([39m$value[33m)) {[39m
+[34m293[39m: [33m            return [39mfalse[33m;[39m
+[34m294[39m: [33m        }[39m
+[34m295[39m: 
+[34m296[39m: [33m        return [39mpreg_match[33m([39m[32m'/^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/iD'[39m[33m, [39m$value[33m) > [39m[35m0[39m[33m;[39m
+[34m297[39m: [33m    }[39m
+[34m298[39m: 
+[34m299[39m: [33m    [39m[34m/**[39m
+[34m300[39m: [34m     * Convert a string to kebab case.[39m
+[34m301[39m: [34m     *[39m
+[34m302[39m: [34m     * @param  string  $value[39m
+[34m303[39m: [34m     * @return string[39m
+[34m304[39m: [34m     */[39m
+[34m305[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mkebab[33m([39m$value[33m)[39m
+[34m306[39m: [33m    {[39m
+[34m307[39m: [33m        return static::[39msnake[33m([39m$value[33m, [39m[32m'-'[39m[33m);[39m
+[34m308[39m: [33m    }[39m
+[34m309[39m: 
+[34m310[39m: [33m    [39m[34m/**[39m
+[34m311[39m: [34m     * Return the length of the given string.[39m
+[34m312[39m: [34m     *[39m
+[34m313[39m: [34m     * @param  string  $value[39m
+[34m314[39m: [34m     * @param  string|null  $encoding[39m
+[34m315[39m: [34m     * @return int[39m
+[34m316[39m: [34m     */[39m
+[34m317[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mlength[33m([39m$value[33m, [39m$encoding [33m= [39mnull[33m)[39m
+[34m318[39m: [33m    {[39m
+[34m319[39m: [33m        if ([39m$encoding[33m) {[39m
+[34m320[39m: [33m            return [39mmb_strlen[33m([39m$value[33m, [39m$encoding[33m);[39m
+[34m321[39m: [33m        }[39m
+[34m322[39m: 
+[34m323[39m: [33m        return [39mmb_strlen[33m([39m$value[33m);[39m
+[34m324[39m: [33m    }[39m
+[34m325[39m: 
+[34m326[39m: [33m    [39m[34m/**[39m
+[34m327[39m: [34m     * Limit the number of characters in a string.[39m
+[34m328[39m: [34m     *[39m
+[34m329[39m: [34m     * @param  string  $value[39m
+[34m330[39m: [34m     * @param  int  $limit[39m
+[34m331[39m: [34m     * @param  string  $end[39m
+[34m332[39m: [34m     * @return string[39m
+[34m333[39m: [34m     */[39m
+[34m334[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mlimit[33m([39m$value[33m, [39m$limit [33m= [39m[35m100[39m[33m, [39m$end [33m= [39m[32m'...'[39m[33m)[39m
+[34m335[39m: [33m    {[39m
+[34m336[39m: [33m        if ([39mmb_strwidth[33m([39m$value[33m, [39m[32m'UTF-8'[39m[33m) <= [39m$limit[33m) {[39m
+[34m337[39m: [33m            return [39m$value[33m;[39m
+[34m338[39m: [33m        }[39m
+[34m339[39m: 
+[34m340[39m: [33m        return [39mrtrim[33m([39mmb_strimwidth[33m([39m$value[33m, [39m[35m0[39m[33m, [39m$limit[33m, [39m[32m''[39m[33m, [39m[32m'UTF-8'[39m[33m)).[39m$end[33m;[39m
+[34m341[39m: [33m    }[39m
+[34m342[39m: 
+[34m343[39m: [33m    [39m[34m/**[39m
+[34m344[39m: [34m     * Convert the given string to lower-case.[39m
+[34m345[39m: [34m     *[39m
+[34m346[39m: [34m     * @param  string  $value[39m
+[34m347[39m: [34m     * @return string[39m
+[34m348[39m: [34m     */[39m
+[34m349[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mlower[33m([39m$value[33m)[39m
+[34m350[39m: [33m    {[39m
+[34m351[39m: [33m        return [39mmb_strtolower[33m([39m$value[33m, [39m[32m'UTF-8'[39m[33m);[39m
+[34m352[39m: [33m    }[39m
+[34m353[39m: 
+[34m354[39m: [33m    [39m[34m/**[39m
+[34m355[39m: [34m     * Limit the number of words in a string.[39m
+[34m356[39m: [34m     *[39m
+[34m357[39m: [34m     * @param  string  $value[39m
+[34m358[39m: [34m     * @param  int  $words[39m
+[34m359[39m: [34m     * @param  string  $end[39m
+[34m360[39m: [34m     * @return string[39m
+[34m361[39m: [34m     */[39m
+[34m362[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mwords[33m([39m$value[33m, [39m$words [33m= [39m[35m100[39m[33m, [39m$end [33m= [39m[32m'...'[39m[33m)[39m
+[34m363[39m: [33m    {[39m
+[34m364[39m: [33m        [39mpreg_match[33m([39m[32m'/^\s*+(?:\S++\s*+){1,'[39m[33m.[39m$words[33m.[39m[32m'}/u'[39m[33m, [39m$value[33m, [39m$matches[33m);[39m
+[34m365[39m: 
+[34m366[39m: [33m        if (! isset([39m$matches[33m[[39m[35m0[39m[33m]) || static::[39mlength[33m([39m$value[33m) === static::[39mlength[33m([39m$matches[33m[[39m[35m0[39m[33m])) {[39m
+[34m367[39m: [33m            return [39m$value[33m;[39m
+[34m368[39m: [33m        }[39m
+[34m369[39m: 
+[34m370[39m: [33m        return [39mrtrim[33m([39m$matches[33m[[39m[35m0[39m[33m]).[39m$end[33m;[39m
+[34m371[39m: [33m    }[39m
+[34m372[39m: 
+[34m373[39m: [33m    [39m[34m/**[39m
+[34m374[39m: [34m     * Pad both sides of a string with another.[39m
+[34m375[39m: [34m     *[39m
+[34m376[39m: [34m     * @param  string  $value[39m
+[34m377[39m: [34m     * @param  int  $length[39m
+[34m378[39m: [34m     * @param  string  $pad[39m
+[34m379[39m: [34m     * @return string[39m
+[34m380[39m: [34m     */[39m
+[34m381[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mpadBoth[33m([39m$value[33m, [39m$length[33m, [39m$pad [33m= [39m[32m' '[39m[33m)[39m
+[34m382[39m: [33m    {[39m
+[34m383[39m: [33m        return [39mstr_pad[33m([39m$value[33m, [39m$length[33m, [39m$pad[33m, [39mSTR_PAD_BOTH[33m);[39m
+[34m384[39m: [33m    }[39m
+[34m385[39m: 
+[34m386[39m: [33m    [39m[34m/**[39m
+[34m387[39m: [34m     * Pad the left side of a string with another.[39m
+[34m388[39m: [34m     *[39m
+[34m389[39m: [34m     * @param  string  $value[39m
+[34m390[39m: [34m     * @param  int  $length[39m
+[34m391[39m: [34m     * @param  string  $pad[39m
+[34m392[39m: [34m     * @return string[39m
+[34m393[39m: [34m     */[39m
+[34m394[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mpadLeft[33m([39m$value[33m, [39m$length[33m, [39m$pad [33m= [39m[32m' '[39m[33m)[39m
+[34m395[39m: [33m    {[39m
+[34m396[39m: [33m        return [39mstr_pad[33m([39m$value[33m, [39m$length[33m, [39m$pad[33m, [39mSTR_PAD_LEFT[33m);[39m
+[34m397[39m: [33m    }[39m
+[34m398[39m: 
+[34m399[39m: [33m    [39m[34m/**[39m
+[34m400[39m: [34m     * Pad the right side of a string with another.[39m
+[34m401[39m: [34m     *[39m
+[34m402[39m: [34m     * @param  string  $value[39m
+[34m403[39m: [34m     * @param  int  $length[39m
+[34m404[39m: [34m     * @param  string  $pad[39m
+[34m405[39m: [34m     * @return string[39m
+[34m406[39m: [34m     */[39m
+[34m407[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mpadRight[33m([39m$value[33m, [39m$length[33m, [39m$pad [33m= [39m[32m' '[39m[33m)[39m
+[34m408[39m: [33m    {[39m
+[34m409[39m: [33m        return [39mstr_pad[33m([39m$value[33m, [39m$length[33m, [39m$pad[33m, [39mSTR_PAD_RIGHT[33m);[39m
+[34m410[39m: [33m    }[39m
+[34m411[39m: 
+[34m412[39m: [33m    [39m[34m/**[39m
+[34m413[39m: [34m     * Parse a Class[@]method style callback into class and method.[39m
+[34m414[39m: [34m     *[39m
+[34m415[39m: [34m     * @param  string  $callback[39m
+[34m416[39m: [34m     * @param  string|null  $default[39m
+[34m417[39m: [34m     * @return array<int, string|null>[39m
+[34m418[39m: [34m     */[39m
+[34m419[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mparseCallback[33m([39m$callback[33m, [39m$default [33m= [39mnull[33m)[39m
+[34m420[39m: [33m    {[39m
+[34m421[39m: [33m        return static::[39mcontains[33m([39m$callback[33m, [39m[32m'@'[39m[33m) ? [39mexplode[33m([39m[32m'@'[39m[33m, [39m$callback[33m, [39m[35m2[39m[33m) : [[39m$callback[33m, [39m$default[33m];[39m
+[34m422[39m: [33m    }[39m
+[34m423[39m: 
+[34m424[39m: [33m    [39m[34m/**[39m
+[34m425[39m: [34m     * Get the plural form of an English word.[39m
+[34m426[39m: [34m     *[39m
+[34m427[39m: [34m     * @param  string  $value[39m
+[34m428[39m: [34m     * @param  int  $count[39m
+[34m429[39m: [34m     * @return string[39m
+[34m430[39m: [34m     */[39m
+[34m431[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mplural[33m([39m$value[33m, [39m$count [33m= [39m[35m2[39m[33m)[39m
+[34m432[39m: [33m    {[39m
+[34m433[39m: [33m        return [39mPluralizer[33m::[39mplural[33m([39m$value[33m, [39m$count[33m);[39m
+[34m434[39m: [33m    }[39m
+[34m435[39m: 
+[34m436[39m: [33m    [39m[34m/**[39m
+[34m437[39m: [34m     * Pluralize the last word of an English, studly caps case string.[39m
+[34m438[39m: [34m     *[39m
+[34m439[39m: [34m     * @param  string  $value[39m
+[34m440[39m: [34m     * @param  int  $count[39m
+[34m441[39m: [34m     * @return string[39m
+[34m442[39m: [34m     */[39m
+[34m443[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mpluralStudly[33m([39m$value[33m, [39m$count [33m= [39m[35m2[39m[33m)[39m
+[34m444[39m: [33m    {[39m
+[34m445[39m: [33m        [39m$parts [33m= [39mpreg_split[33m([39m[32m'/(.)(?=[A-Z])/u'[39m[33m, [39m$value[33m, -[39m[35m1[39m[33m, [39mPREG_SPLIT_DELIM_CAPTURE[33m);[39m
+[34m446[39m: 
+[34m447[39m: [33m        [39m$lastWord [33m= [39marray_pop[33m([39m$parts[33m);[39m
+[34m448[39m: 
+[34m449[39m: [33m        return [39mimplode[33m([39m[32m''[39m[33m, [39m$parts[33m).[39mself[33m::[39mplural[33m([39m$lastWord[33m, [39m$count[33m);[39m
+[34m450[39m: [33m    }[39m
+[34m451[39m: 
+[34m452[39m: [33m    [39m[34m/**[39m
+[34m453[39m: [34m     * Generate a more truly "random" alpha-numeric string.[39m
+[34m454[39m: [34m     *[39m
+[34m455[39m: [34m     * @param  int  $length[39m
+[34m456[39m: [34m     * @return string[39m
+[34m457[39m: [34m     */[39m
+[34m458[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mrandom[33m([39m$length [33m= [39m[35m16[39m[33m)[39m
+[34m459[39m: [33m    {[39m
+[34m460[39m: [33m        [39m$string [33m= [39m[32m''[39m[33m;[39m
+[34m461[39m: 
+[34m462[39m: [33m        while (([39m$len [33m= [39mstrlen[33m([39m$string[33m)) < [39m$length[33m) {[39m
+[34m463[39m: [33m            [39m$size [33m= [39m$length [33m- [39m$len[33m;[39m
+[34m464[39m: 
+[34m465[39m: [33m            [39m$bytes [33m= [39mrandom_bytes[33m([39m$size[33m);[39m
+[34m466[39m: 
+[34m467[39m: [33m            [39m$string [33m.= [39msubstr[33m([39mstr_replace[33m([[39m[32m'/'[39m[33m, [39m[32m'+'[39m[33m, [39m[32m'='[39m[33m], [39m[32m''[39m[33m, [39mbase64_encode[33m([39m$bytes[33m)), [39m[35m0[39m[33m, [39m$size[33m);[39m
+[34m468[39m: [33m        }[39m
+[34m469[39m: 
+[34m470[39m: [33m        return [39m$string[33m;[39m
+[34m471[39m: [33m    }[39m
+[34m472[39m: 
+[34m473[39m: [33m    [39m[34m/**[39m
+[34m474[39m: [34m     * Replace a given value in the string sequentially with an array.[39m
+[34m475[39m: [34m     *[39m
+[34m476[39m: [34m     * @param  string  $search[39m
+[34m477[39m: [34m     * @param  array<int|string, string>  $replace[39m
+[34m478[39m: [34m     * @param  string  $subject[39m
+[34m479[39m: [34m     * @return string[39m
+[34m480[39m: [34m     */[39m
+[34m481[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mreplaceArray[33m([39m$search[33m, array [39m$replace[33m, [39m$subject[33m)[39m
+[34m482[39m: [33m    {[39m
+[34m483[39m: [33m        [39m$segments [33m= [39mexplode[33m([39m$search[33m, [39m$subject[33m);[39m
+[34m484[39m: 
+[34m485[39m: [33m        [39m$result [33m= [39marray_shift[33m([39m$segments[33m);[39m
+[34m486[39m: 
+[34m487[39m: [33m        foreach ([39m$segments [33mas [39m$segment[33m) {[39m
+[34m488[39m: [33m            [39m$result [33m.= ([39marray_shift[33m([39m$replace[33m) ?? [39m$search[33m).[39m$segment[33m;[39m
+[34m489[39m: [33m        }[39m
+[34m490[39m: 
+[34m491[39m: [33m        return [39m$result[33m;[39m
+[34m492[39m: [33m    }[39m
+[34m493[39m: 
+[34m494[39m: [33m    [39m[34m/**[39m
+[34m495[39m: [34m     * Replace the first occurrence of a given value in the string.[39m
+[34m496[39m: [34m     *[39m
+[34m497[39m: [34m     * @param  string  $search[39m
+[34m498[39m: [34m     * @param  string  $replace[39m
+[34m499[39m: [34m     * @param  string  $subject[39m
+[34m500[39m: [34m     * @return string[39m
+[34m501[39m: [34m     */[39m
+[34m502[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mreplaceFirst[33m([39m$search[33m, [39m$replace[33m, [39m$subject[33m)[39m
+[34m503[39m: [33m    {[39m
+[34m504[39m: [33m        if ([39m$search [33m== [39m[32m''[39m[33m) {[39m
+[34m505[39m: [33m            return [39m$subject[33m;[39m
+[34m506[39m: [33m        }[39m
+[34m507[39m: 
+[34m508[39m: [33m        [39m$position [33m= [39mstrpos[33m([39m$subject[33m, [39m$search[33m);[39m
+[34m509[39m: 
+[34m510[39m: [33m        if ([39m$position [33m!== [39mfalse[33m) {[39m
+[34m511[39m: [33m            return [39msubstr_replace[33m([39m$subject[33m, [39m$replace[33m, [39m$position[33m, [39mstrlen[33m([39m$search[33m));[39m
+[34m512[39m: [33m        }[39m
+[34m513[39m: 
+[34m514[39m: [33m        return [39m$subject[33m;[39m
+[34m515[39m: [33m    }[39m
+[34m516[39m: 
+[34m517[39m: [33m    [39m[34m/**[39m
+[34m518[39m: [34m     * Replace the last occurrence of a given value in the string.[39m
+[34m519[39m: [34m     *[39m
+[34m520[39m: [34m     * @param  string  $search[39m
+[34m521[39m: [34m     * @param  string  $replace[39m
+[34m522[39m: [34m     * @param  string  $subject[39m
+[34m523[39m: [34m     * @return string[39m
+[34m524[39m: [34m     */[39m
+[34m525[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mreplaceLast[33m([39m$search[33m, [39m$replace[33m, [39m$subject[33m)[39m
+[34m526[39m: [33m    {[39m
+[34m527[39m: [33m        [39m$position [33m= [39mstrrpos[33m([39m$subject[33m, [39m$search[33m);[39m
+[34m528[39m: 
+[34m529[39m: [33m        if ([39m$position [33m!== [39mfalse[33m) {[39m
+[34m530[39m: [33m            return [39msubstr_replace[33m([39m$subject[33m, [39m$replace[33m, [39m$position[33m, [39mstrlen[33m([39m$search[33m));[39m
+[34m531[39m: [33m        }[39m
+[34m532[39m: 
+[34m533[39m: [33m        return [39m$subject[33m;[39m
+[34m534[39m: [33m    }[39m
+[34m535[39m: 
+[34m536[39m: [33m    [39m[34m/**[39m
+[34m537[39m: [34m     * Begin a string with a single instance of a given value.[39m
+[34m538[39m: [34m     *[39m
+[34m539[39m: [34m     * @param  string  $value[39m
+[34m540[39m: [34m     * @param  string  $prefix[39m
+[34m541[39m: [34m     * @return string[39m
+[34m542[39m: [34m     */[39m
+[34m543[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mstart[33m([39m$value[33m, [39m$prefix[33m)[39m
+[34m544[39m: [33m    {[39m
+[34m545[39m: [33m        [39m$quoted [33m= [39mpreg_quote[33m([39m$prefix[33m, [39m[32m'/'[39m[33m);[39m
+[34m546[39m: 
+[34m547[39m: [33m        return [39m$prefix[33m.[39mpreg_replace[33m([39m[32m'/^(?:'[39m[33m.[39m$quoted[33m.[39m[32m')+/u'[39m[33m, [39m[32m''[39m[33m, [39m$value[33m);[39m
+[34m548[39m: [33m    }[39m
+[34m549[39m: 
+[34m550[39m: [33m    [39m[34m/**[39m
+[34m551[39m: [34m     * Convert the given string to upper-case.[39m
+[34m552[39m: [34m     *[39m
+[34m553[39m: [34m     * @param  string  $value[39m
+[34m554[39m: [34m     * @return string[39m
+[34m555[39m: [34m     */[39m
+[34m556[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mupper[33m([39m$value[33m)[39m
+[34m557[39m: [33m    {[39m
+[34m558[39m: [33m        return [39mmb_strtoupper[33m([39m$value[33m, [39m[32m'UTF-8'[39m[33m);[39m
+[34m559[39m: [33m    }[39m
+[34m560[39m: 
+[34m561[39m: [33m    [39m[34m/**[39m
+[34m562[39m: [34m     * Convert the given string to title case.[39m
+[34m563[39m: [34m     *[39m
+[34m564[39m: [34m     * @param  string  $value[39m
+[34m565[39m: [34m     * @return string[39m
+[34m566[39m: [34m     */[39m
+[34m567[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mtitle[33m([39m$value[33m)[39m
+[34m568[39m: [33m    {[39m
+[34m569[39m: [33m        return [39mmb_convert_case[33m([39m$value[33m, [39mMB_CASE_TITLE[33m, [39m[32m'UTF-8'[39m[33m);[39m
+[34m570[39m: [33m    }[39m
+[34m571[39m: 
+[34m572[39m: [33m    [39m[34m/**[39m
+[34m573[39m: [34m     * Get the singular form of an English word.[39m
+[34m574[39m: [34m     *[39m
+[34m575[39m: [34m     * @param  string  $value[39m
+[34m576[39m: [34m     * @return string[39m
+[34m577[39m: [34m     */[39m
+[34m578[39m: [34m    [39m[1mpublic [22m[33mstatic function [39msingular[33m([39m$value[33m)[39m
+[34m579[39m: [33m    {[39m
+[34m580[39m: [33m        return [39mPluralizer[33m::[39msingular[33m([39m$value[33m);[39m
+[34m581[39m: [33m    }[39m
+[34m582[39m: 
+[34m583[39m: [33m    [39m[34m/**[39m
+[34m584[39m: [34m     * Generate a URL friendly "slug" from a given string.[39m
+[34m585[39m: [34m     *[39m
+[34m586[39m: [34m     * @param  string  $title[39m
+[34m587[39m: [34m     * @param  string  $separator[39m
+[34m588[39m: [34m     * @param  string|null  $language[39m
+[34m589[39m: [34m     * @return string[39m
+[34m590[39m: [34m     */[39m
+[34m591[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mslug[33m([39m$title[33m, [39m$separator [33m= [39m[32m'-'[39m[33m, [39m$language [33m= [39m[32m'en'[39m[33m)[39m
+[34m592[39m: [33m    {[39m
+[34m593[39m: [33m        [39m$title [33m= [39m$language [33m? static::[39mascii[33m([39m$title[33m, [39m$language[33m) : [39m$title[33m;[39m
+[34m594[39m: 
+[34m595[39m: [33m        [39m[34m// Convert all dashes/underscores into separator[39m
+[34m596[39m: [34m        [39m$flip [33m= [39m$separator [33m=== [39m[32m'-' [39m[33m? [39m[32m'_' [39m[33m: [39m[32m'-'[39m[33m;[39m
+[34m597[39m: 
+[34m598[39m: [33m        [39m$title [33m= [39mpreg_replace[33m([39m[32m'!['[39m[33m.[39mpreg_quote[33m([39m$flip[33m).[39m[32m']+!u'[39m[33m, [39m$separator[33m, [39m$title[33m);[39m
+[34m599[39m: 
+[34m600[39m: [33m        [39m[34m// Replace @ with the word 'at'[39m
+[34m601[39m: [34m        [39m$title [33m= [39mstr_replace[33m([39m[32m'@'[39m[33m, [39m$separator[33m.[39m[32m'at'[39m[33m.[39m$separator[33m, [39m$title[33m);[39m
+[34m602[39m: 
+[34m603[39m: [33m        [39m[34m// Remove all characters that are not the separator, letters, numbers, or whitespace.[39m
+[34m604[39m: [34m        [39m$title [33m= [39mpreg_replace[33m([39m[32m'![^'[39m[33m.[39mpreg_quote[33m([39m$separator[33m).[39m[32m'\pL\pN\s]+!u'[39m[33m, [39m[32m''[39m[33m, static::[39mlower[33m([39m$title[33m));[39m
+[34m605[39m: 
+[34m606[39m: [33m        [39m[34m// Replace all separator characters and whitespace by a single separator[39m
+[34m607[39m: [34m        [39m$title [33m= [39mpreg_replace[33m([39m[32m'!['[39m[33m.[39mpreg_quote[33m([39m$separator[33m).[39m[32m'\s]+!u'[39m[33m, [39m$separator[33m, [39m$title[33m);[39m
+[34m608[39m: 
+[34m609[39m: [33m        return [39mtrim[33m([39m$title[33m, [39m$separator[33m);[39m
+[34m610[39m: [33m    }[39m
+[34m611[39m: 
+[34m612[39m: [33m    [39m[34m/**[39m
+[34m613[39m: [34m     * Convert a string to snake case.[39m
+[34m614[39m: [34m     *[39m
+[34m615[39m: [34m     * @param  string  $value[39m
+[34m616[39m: [34m     * @param  string  $delimiter[39m
+[34m617[39m: [34m     * @return string[39m
+[34m618[39m: [34m     */[39m
+[34m619[39m: [34m    [39m[1mpublic [22m[33mstatic function [39msnake[33m([39m$value[33m, [39m$delimiter [33m= [39m[32m'_'[39m[33m)[39m
+[34m620[39m: [33m    {[39m
+[34m621[39m: [33m        [39m$key [33m= [39m$value[33m;[39m
+[34m622[39m: 
+[34m623[39m: [33m        if (isset(static::[39m$snakeCache[33m[[39m$key[33m][[39m$delimiter[33m])) {[39m
+[34m624[39m: [33m            return static::[39m$snakeCache[33m[[39m$key[33m][[39m$delimiter[33m];[39m
+[34m625[39m: [33m        }[39m
+[34m626[39m: 
+[34m627[39m: [33m        if (! [39mctype_lower[33m([39m$value[33m)) {[39m
+[34m628[39m: [33m            [39m$value [33m= [39mpreg_replace[33m([39m[32m'/\s+/u'[39m[33m, [39m[32m''[39m[33m, [39mucwords[33m([39m$value[33m));[39m
+[34m629[39m: 
+[34m630[39m: [33m            [39m$value [33m= static::[39mlower[33m([39mpreg_replace[33m([39m[32m'/(.)(?=[A-Z])/u'[39m[33m, [39m[32m'$1'[39m[33m.[39m$delimiter[33m, [39m$value[33m));[39m
+[34m631[39m: [33m        }[39m
+[34m632[39m: 
+[34m633[39m: [33m        return static::[39m$snakeCache[33m[[39m$key[33m][[39m$delimiter[33m] = [39m$value[33m;[39m
+[34m634[39m: [33m    }[39m
+[34m635[39m: 
+[34m636[39m: [33m    [39m[34m/**[39m
+[34m637[39m: [34m     * Determine if a given string starts with a given substring.[39m
+[34m638[39m: [34m     *[39m
+[34m639[39m: [34m     * @param  string  $haystack[39m
+[34m640[39m: [34m     * @param  string|string[]  $needles[39m
+[34m641[39m: [34m     * @return bool[39m
+[34m642[39m: [34m     */[39m
+[34m643[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mstartsWith[33m([39m$haystack[33m, [39m$needles[33m)[39m
+[34m644[39m: [33m    {[39m
+[34m645[39m: [33m        foreach ((array) [39m$needles [33mas [39m$needle[33m) {[39m
+[34m646[39m: [33m            if ((string) [39m$needle [33m!== [39m[32m'' [39m[33m&& [39mstrncmp[33m([39m$haystack[33m, [39m$needle[33m, [39mstrlen[33m([39m$needle[33m)) === [39m[35m0[39m[33m) {[39m
+[34m647[39m: [33m                return [39mtrue[33m;[39m
+[34m648[39m: [33m            }[39m
+[34m649[39m: [33m        }[39m
+[34m650[39m: 
+[34m651[39m: [33m        return [39mfalse[33m;[39m
+[34m652[39m: [33m    }[39m
+[34m653[39m: 
+[34m654[39m: [33m    [39m[34m/**[39m
+[34m655[39m: [34m     * Convert a value to studly caps case.[39m
+[34m656[39m: [34m     *[39m
+[34m657[39m: [34m     * @param  string  $value[39m
+[34m658[39m: [34m     * @return string[39m
+[34m659[39m: [34m     */[39m
+[34m660[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mstudly[33m([39m$value[33m)[39m
+[34m661[39m: [33m    {[39m
+[34m662[39m: [33m        [39m$key [33m= [39m$value[33m;[39m
+[34m663[39m: 
+[34m664[39m: [33m        if (isset(static::[39m$studlyCache[33m[[39m$key[33m])) {[39m
+[34m665[39m: [33m            return static::[39m$studlyCache[33m[[39m$key[33m];[39m
+[34m666[39m: [33m        }[39m
+[34m667[39m: 
+[34m668[39m: [33m        [39m$value [33m= [39mucwords[33m([39mstr_replace[33m([[39m[32m'-'[39m[33m, [39m[32m'_'[39m[33m], [39m[32m' '[39m[33m, [39m$value[33m));[39m
+[34m669[39m: 
+[34m670[39m: [33m        return static::[39m$studlyCache[33m[[39m$key[33m] = [39mstr_replace[33m([39m[32m' '[39m[33m, [39m[32m''[39m[33m, [39m$value[33m);[39m
+[34m671[39m: [33m    }[39m
+[34m672[39m: 
+[34m673[39m: [33m    [39m[34m/**[39m
+[34m674[39m: [34m     * Returns the portion of string specified by the start and length parameters.[39m
+[34m675[39m: [34m     *[39m
+[34m676[39m: [34m     * @param  string  $string[39m
+[34m677[39m: [34m     * @param  int  $start[39m
+[34m678[39m: [34m     * @param  int|null  $length[39m
+[34m679[39m: [34m     * @return string[39m
+[34m680[39m: [34m     */[39m
+[34m681[39m: [34m    [39m[1mpublic [22m[33mstatic function [39msubstr[33m([39m$string[33m, [39m$start[33m, [39m$length [33m= [39mnull[33m)[39m
+[34m682[39m: [33m    {[39m
+[34m683[39m: [33m        return [39mmb_substr[33m([39m$string[33m, [39m$start[33m, [39m$length[33m, [39m[32m'UTF-8'[39m[33m);[39m
+[34m684[39m: [33m    }[39m
+[34m685[39m: 
+[34m686[39m: [33m    [39m[34m/**[39m
+[34m687[39m: [34m     * Returns the number of substring occurrences.[39m
+[34m688[39m: [34m     *[39m
+[34m689[39m: [34m     * @param  string  $haystack[39m
+[34m690[39m: [34m     * @param  string  $needle[39m
+[34m691[39m: [34m     * @param  int  $offset[39m
+[34m692[39m: [34m     * @param  int|null  $length[39m
+[34m693[39m: [34m     * @return int[39m
+[34m694[39m: [34m     */[39m
+[34m695[39m: [34m    [39m[1mpublic [22m[33mstatic function [39msubstrCount[33m([39m$haystack[33m, [39m$needle[33m, [39m$offset [33m= [39m[35m0[39m[33m, [39m$length [33m= [39mnull[33m)[39m
+[34m696[39m: [33m    {[39m
+[34m697[39m: [33m        if (! [39mis_null[33m([39m$length[33m)) {[39m
+[34m698[39m: [33m            return [39msubstr_count[33m([39m$haystack[33m, [39m$needle[33m, [39m$offset[33m, [39m$length[33m);[39m
+[34m699[39m: [33m        } else {[39m
+[34m700[39m: [33m            return [39msubstr_count[33m([39m$haystack[33m, [39m$needle[33m, [39m$offset[33m);[39m
+[34m701[39m: [33m        }[39m
+[34m702[39m: [33m    }[39m
+[34m703[39m: 
+[34m704[39m: [33m    [39m[34m/**[39m
+[34m705[39m: [34m     * Make a string's first character uppercase.[39m
+[34m706[39m: [34m     *[39m
+[34m707[39m: [34m     * @param  string  $string[39m
+[34m708[39m: [34m     * @return string[39m
+[34m709[39m: [34m     */[39m
+[34m710[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mucfirst[33m([39m$string[33m)[39m
+[34m711[39m: [33m    {[39m
+[34m712[39m: [33m        return static::[39mupper[33m(static::[39msubstr[33m([39m$string[33m, [39m[35m0[39m[33m, [39m[35m1[39m[33m)).static::[39msubstr[33m([39m$string[33m, [39m[35m1[39m[33m);[39m
+[34m713[39m: [33m    }[39m
+[34m714[39m: 
+[34m715[39m: [33m    [39m[34m/**[39m
+[34m716[39m: [34m     * Generate a UUID (version 4).[39m
+[34m717[39m: [34m     *[39m
+[34m718[39m: [34m     * @return \Ramsey\Uuid\UuidInterface[39m
+[34m719[39m: [34m     */[39m
+[34m720[39m: [34m    [39m[1mpublic [22m[33mstatic function [39muuid[33m()[39m
+[34m721[39m: [33m    {[39m
+[34m722[39m: [33m        return static::[39m$uuidFactory
+[34m723[39m:                     [33m? [39mcall_user_func[33m(static::[39m$uuidFactory[33m)[39m
+[34m724[39m: [33m                    : [39mUuid[33m::[39muuid4[33m();[39m
+[34m725[39m: [33m    }[39m
+[34m726[39m: 
+[34m727[39m: [33m    [39m[34m/**[39m
+[34m728[39m: [34m     * Generate a time-ordered UUID (version 4).[39m
+[34m729[39m: [34m     *[39m
+[34m730[39m: [34m     * @return \Ramsey\Uuid\UuidInterface[39m
+[34m731[39m: [34m     */[39m
+[34m732[39m: [34m    [39m[1mpublic [22m[33mstatic function [39morderedUuid[33m()[39m
+[34m733[39m: [33m    {[39m
+[34m734[39m: [33m        if (static::[39m$uuidFactory[33m) {[39m
+[34m735[39m: [33m            return [39mcall_user_func[33m(static::[39m$uuidFactory[33m);[39m
+[34m736[39m: [33m        }[39m
+[34m737[39m: 
+[34m738[39m: [33m        [39m$factory [33m= new [39mUuidFactory[33m();[39m
+[34m739[39m: 
+[34m740[39m: [33m        [39m$factory[33m->[39msetRandomGenerator[33m(new [39mCombGenerator[33m([39m
+[34m741[39m: [33m            [39m$factory[33m->[39mgetRandomGenerator[33m(),[39m
+[34m742[39m: [33m            [39m$factory[33m->[39mgetNumberConverter[33m()[39m
+[34m743[39m: [33m        ));[39m
+[34m744[39m: 
+[34m745[39m: [33m        [39m$factory[33m->[39msetCodec[33m(new [39mTimestampFirstCombCodec[33m([39m
+[34m746[39m: [33m            [39m$factory[33m->[39mgetUuidBuilder[33m()[39m
+[34m747[39m: [33m        ));[39m
+[34m748[39m: 
+[34m749[39m: [33m        return [39m$factory[33m->[39muuid4[33m();[39m
+[34m750[39m: [33m    }[39m
+[34m751[39m: 
+[34m752[39m: [33m    [39m[34m/**[39m
+[34m753[39m: [34m     * Set the callable that will be used to generate UUIDs.[39m
+[34m754[39m: [34m     *[39m
+[34m755[39m: [34m     * @param  callable|null  $factory[39m
+[34m756[39m: [34m     * @return void[39m
+[34m757[39m: [34m     */[39m
+[34m758[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mcreateUuidsUsing[33m(callable [39m$factory [33m= [39mnull[33m)[39m
+[34m759[39m: [33m    {[39m
+[34m760[39m: [33m        static::[39m$uuidFactory [33m= [39m$factory[33m;[39m
+[34m761[39m: [33m    }[39m
+[34m762[39m: 
+[34m763[39m: [33m    [39m[34m/**[39m
+[34m764[39m: [34m     * Indicate that UUIDs should be created normally and not using a custom factory.[39m
+[34m765[39m: [34m     *[39m
+[34m766[39m: [34m     * @return void[39m
+[34m767[39m: [34m     */[39m
+[34m768[39m: [34m    [39m[1mpublic [22m[33mstatic function [39mcreateUuidsNormally[33m()[39m
+[34m769[39m: [33m    {[39m
+[34m770[39m: [33m        static::[39m$uuidFactory [33m= [39mnull[33m;[39m
+[34m771[39m: [33m    }[39m
+[34m772[39m: [33m}[39m
+
