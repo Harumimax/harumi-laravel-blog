@@ -1,18 +1,17 @@
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
+<head>
 
-        <title>Hexlet Blog - @yield('title')</title>
+  @include('shared.metatags')
 
-	@include('shared.metatags')
-    </head>
+  <title>Подключение Bootstrap</title>
+</head>
     <body>
-        <div class="container mt-4">
-            <h1>@yield('header')</h1>
-            <div>
-                @yield('content')
-            </div>
-		<a href="/">Back</a>
-        </div>
+
+        @yield('header')
+        @yield('content')
+
+            <a href="/">Back</a>
+
     </body>
 </html>
